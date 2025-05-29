@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import db from './db/database.js';
+import surveyRoutes from './routes/surveyRoutes.js';
 
 const app = express();
 const PORT = process.env.PORT || 5000; 
@@ -9,10 +10,7 @@ const PORT = process.env.PORT || 5000;
 app.use(cors()); 
 app.use(express.json()); 
 
-// Basic route for testing
-app.get('/', (req, res) => {
-  res.send('Hello from the Lifestyle Survey App Server!');
-});
+app.use('/api', surveyRoutes);
 
 try {
   db.prepare(`SELECT 1`).get();
