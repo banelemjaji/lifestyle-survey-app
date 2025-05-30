@@ -65,6 +65,54 @@ export const getSurveyResults = (req, res) => {
       }
       return age;
     }).filter(age => !isNaN(age)); // Ensure only valid age numbers are processed.
+
+    // Calculate age-related statistics: average, oldest, and youngest.
+    // '.toFixed(1)' formats numbers to one decimal place. 'N/A' is used if no valid ages.
+    const avgAge = ages.length > 0 ? (ages.reduce((a, b) => a + b, 0) / ages.length).toFixed(1) : 'N/A';
+    const oldest = ages.length > 0 ? Math.max(...ages) : 'N/A';
+    const youngest = ages.length > 0 ? Math.min(...ages) : 'N/A';
+
+    // Calculate the number of people who prefer each type of food.
+    // Assumes boolean-like values (1 for liked) in the respective DB columns.
+    const pizzaFans = rows.filter(r => r.fav_food_pizza === 1).length;
+    const pastaFans = rows.filter(r => r.fav_food_pasta === 1).length;
+    const papAndWorsFans = rows.filter(r => r.fav_food_pap_wors === 1).length;
+
+    // Calculate the percentage of people for each food preference.
+    const pizzaPercent = totalSurveys > 0 ? ((pizzaFans / totalSurveys) * 100).toFixed(1) : '0.0';
+    const pastaPercent = totalSurveys > 0 ? ((pastaFans / totalSurveys) * 100).toFixed(1) : '0.0';
+    const papAndWorsPercent = totalSurveys > 0 ? ((papAndWorsFans / totalSurveys) * 100).toFixed(1) : '0.0';
+
+    // Calculate average ratings for different activities.
+    // '.reduce' sums up the ratings, which is then divided by the total number of surveys.
+    const avgMoviesRating = totalSurveys > 0 ? (
+      rows.reduce((sum, r) => sum + r.movies_rating, 0) / totalSurveys
+    ).toFixed(1) : 'N/A';
+    const avgRadioRating = totalSurveys > 0 ? (
+      rows.reduce((sum, r) => sum + r.radio_rating, 0) / totalSurveys
+    ).toFixed(1) : 'N/A';
+    const avgEatOutRating = totalSurveys > 0 ? (
+      rows.reduce((sum, r) => sum + r.eat_out_rating, 0) / totalSurveys
+    ).toFixed(1) : 'N/A';
+    const avgTvRating = totalSurveys > 0 ? (
+      rows.reduce((sum, r) => sum + r.tv_rating, 0) / totalSurveys
+    ).toFixed(1) : 'N/A';
+
+    // Construct and send the JSON response with all calculated stats.
+    res.json({
+      'totalSurveys number of surveys': totalSurveys,
+      'Average Age': avgAge,
+      'Oldest person who participated in survey': oldest,
+      'Youngest person who participated in survey': youngest,
+      'Percentage of people who like Pizza': pizzaPercent,
+      'Percentage of people who like Pasta': pastaPercent,
+      'Percentage of people who like Pap and Wors': papAndWorsPercent,
+      'People who like to watch movies': avgMoviesRating,
+      'People like to listen to radio': avgRadioRating,
+      'People like to eat out': avgEatOutRating,
+      'People like to watch TV': avgTvRating
+    });
+
   } catch (err) {
     console.error('Error fetching survey results:', err);
     res.status(500).json({ error: 'Failed to retrieve survey results. ' + err.message });
