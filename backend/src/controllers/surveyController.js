@@ -52,6 +52,19 @@ export const getSurveyResults = (req, res) => {
     if (rows.length === 0) {
       return res.json({ message: 'No Surveys completed yet.' });
     }
+    const totalSurveys = rows.length;
+
+    // Calculate the age of each respondent based on their date of birth.
+    const ages = rows.map(row => {
+      const dob = new Date(row.date_of_birth);
+      const today = new Date();
+      let age = today.getFullYear() - dob.getFullYear();
+      const monthDiff = today.getMonth() - dob.getMonth();
+      if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < dob.getDate())) {
+        age--;
+      }
+      return age;
+    }).filter(age => !isNaN(age)); // Ensure only valid age numbers are processed.
   } catch (err) {
     console.error('Error fetching survey results:', err);
     res.status(500).json({ error: 'Failed to retrieve survey results. ' + err.message });
