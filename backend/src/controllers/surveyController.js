@@ -41,3 +41,19 @@ export const submitSurvey = (req, res) => {
     res.status(500).json({ error: 'Failed to save survey. ' + err.message });
   }
 };
+
+// This function handles a GET request to fetch survey statistics.
+// It retrieves all survey responses from the database and returns them as JSON.
+export const getSurveyResults = (req, res) => {
+  try {
+    // Fetch all survey entries from the database.
+    const rows = db.prepare('SELECT * FROM surveys').all();
+    // Handle the case where no surveys have been submitted yet.
+    if (rows.length === 0) {
+      return res.json({ message: 'No Surveys completed yet.' });
+    }
+  } catch (err) {
+    console.error('Error fetching survey results:', err);
+    res.status(500).json({ error: 'Failed to retrieve survey results. ' + err.message });
+  }
+};
