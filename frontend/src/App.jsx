@@ -1,12 +1,16 @@
-import { useState } from 'react'
-import './App.css'
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import SurveyForm from './components/surveyForm.jsx';
+import SurveyResults from './components/surveyForm.jsx';
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <p className="text-2xl font-bold">Hello World</p>
-  )
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<SurveyForm />} />
+        <Route path="/results" element={<SurveyResults />} />
+      </Routes>
+    </BrowserRouter>
+  );
 }
 
-export default App
+export default App;
