@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import SurveyForm from './components/surveyForm.jsx';
-import SurveyResults from './components/surveyForm.jsx';
+import SurveyResults from './components/surveyResults.jsx';
 
 function App() {
   return (

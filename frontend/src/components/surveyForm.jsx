@@ -36,9 +36,27 @@ function SurveyForm() {
     setError('');
     setSuccess('');
 
+    // Required fields check
     if (!formData.full_name || !formData.email || !formData.date_of_birth || !formData.contact_number) {
       setError('Please fill in all required fields.');
       return;
+    }
+
+    // Age validation
+    const birthDate = new Date(formData.date_of_birth);
+    const age = new Date().getFullYear() - birthDate.getFullYear();
+    if (age < 5 || age > 120) {
+      setError('Age must be between 5 and 120 years.');
+      return;
+    }
+
+    // Ratings validation
+    const ratingFields = ['movies_rating', 'radio_rating', 'eat_out_rating', 'tv_rating'];
+    for (let field of ratingFields) {
+      if (formData[field] === 0) {
+        setError('Please select a rating for all questions.');
+        return;
+      }
     }
 
     try {
@@ -60,48 +78,40 @@ function SurveyForm() {
         </div>
       </div>
 
-      {/* Form */}
       <form onSubmit={handleSubmit} className="space-y-8">
+        {/* Personal Details */}
         <div className="flex gap-6">
-          <div className="w-40 pt-1 font-medium">Personal Details:</div>
+          <div className="w-65 pt-1">Personal Details:</div>
           <div className="flex flex-col w-full gap-4">
             <div className="flex flex-col">
-                <label htmlFor="full_name" className="mb-1">Full Names :</label>
-                <input type="text" name="full_name" id="full_name" value={formData.full_name} onChange={handleChange} className="w-64 border border-blue-300 rounded px-2 py-1 focus:ring-1 focus:ring-blue-500 outline-none"/>
+              <label htmlFor="full_name" className="mb-1">Full Names</label>
+              <input type="text" name="full_name" id="full_name" value={formData.full_name} onChange={handleChange} className="w-64 border border-blue-300 rounded px-2 py-1 focus:ring-1 focus:ring-blue-500 outline-none"/>
             </div>
-            
-  <div className="flex flex-col">
-    <label htmlFor="email" className="mb-1">Email</label>
-    <input type="email" name="email" id="email" value={formData.email} onChange={handleChange} className="w-64 border border-blue-300 rounded px-2 py-1 focus:ring-1 focus:ring-blue-500 outline-none"/>
-  </div>
-
-  <div className="flex flex-col">
-    <label htmlFor="date_of_birth" className="mb-1">Date of Birth</label>
-    <input type="date" name="date_of_birth" id="date_of_birth" value={formData.date_of_birth} onChange={handleChange} className="w-64 border border-blue-300 rounded px-2 py-1 focus:ring-1 focus:ring-blue-500 outline-none"/>
-  </div>
-
-  <div className="flex flex-col">
-    <label htmlFor="contact_number" className="mb-1">Contact Number</label>
-    <input type="text" name="contact_number" id="contact_number" value={formData.contact_number} onChange={handleChange} className="w-64 border border-blue-300 rounded px-2 py-1 focus:ring-1 focus:ring-blue-500 outline-none"/>
-  </div>
-</div>
-
+            <div className="flex flex-col">
+              <label htmlFor="email" className="mb-1">Email</label>
+              <input type="email" name="email" id="email" value={formData.email} onChange={handleChange} className="w-64 border border-blue-300 rounded px-2 py-1 focus:ring-1 focus:ring-blue-500 outline-none"/>
+            </div>
+            <div className="flex flex-col">
+              <label htmlFor="date_of_birth" className="mb-1">Date of Birth</label>
+              <input type="date" name="date_of_birth" id="date_of_birth" value={formData.date_of_birth} onChange={handleChange} className="w-64 border border-blue-300 rounded px-2 py-1 focus:ring-1 focus:ring-blue-500 outline-none"/>
+            </div>
+            <div className="flex flex-col">
+              <label htmlFor="contact_number" className="mb-1">Contact Number</label>
+              <input type="text" name="contact_number" id="contact_number" value={formData.contact_number} onChange={handleChange} className="w-64 border border-blue-300 rounded px-2 py-1 focus:ring-1 focus:ring-blue-500 outline-none"/>
+            </div>
+          </div>
         </div>
 
         {/* Favorite Food */}
         <div className="flex flex-wrap items-center gap-4">
-          <p className="font-medium whitespace-nowrap mr-2">What is your favorite food?</p>
-          {[
-            { label: 'Pizza', name: 'fav_food_pizza' },
-            { label: 'Pasta', name: 'fav_food_pasta' },
-            { label: 'Pap and Wors', name: 'fav_food_pap_wors' },
-            { label: 'Other', name: 'fav_food_other' }
-          ].map((item) => (
-            <label key={item.name} className="flex items-center gap-1">
-              <input type="checkbox" name={item.name} checked={formData[item.name]} onChange={handleChange} />
-              {item.label}
-            </label>
-          ))}
+          <p className="whitespace-nowrap mr-2">What is your favorite food?</p>
+          {[{ label: 'Pizza', name: 'fav_food_pizza' }, { label: 'Pasta', name: 'fav_food_pasta' }, { label: 'Pap and Wors', name: 'fav_food_pap_wors' }, { label: 'Other', name: 'fav_food_other' }]
+            .map((item) => (
+              <label key={item.name} className="flex items-center gap-1">
+                <input type="checkbox" name={item.name} checked={formData[item.name]} onChange={handleChange} />
+                {item.label}
+              </label>
+            ))}
         </div>
 
         {/* Rating Table */}
@@ -109,15 +119,15 @@ function SurveyForm() {
           <p className="mb-3">
             Please rate your level of agreement on a scale from 1 to 5, with 1 being "strongly agree" and 5 being "strongly disagree."
           </p>
-          <table className="w-full border-collapse border border-gray-300 text-center text-sm">
+          <table className="w-full border-collapse border border-blue-400 text-center text-sm table-fixed">
             <thead>
-              <tr>
-                <th className="border border-gray-300 px-2 py-2 text-left"></th>
-                <th className="border border-gray-300 px-2 py-2">Strongly Agree</th>
-                <th className="border border-gray-300 px-2 py-2">Agree</th>
-                <th className="border border-gray-300 px-2 py-2">Neutral</th>
-                <th className="border border-gray-300 px-2 py-2">Disagree</th>
-                <th className="border border-gray-300 px-2 py-2">Strongly Disagree</th>
+              <tr className="bg-gray-300">
+                <th className="border border-blue-400 px-2 py-2 text-left w-2/6"></th>
+                <th className="border border-blue-400 px-2 py-2 w-1/6">Strongly Agree</th>
+                <th className="border border-blue-400 px-2 py-2 w-1/6">Agree</th>
+                <th className="border border-blue-400 px-2 py-2 w-1/6">Neutral</th>
+                <th className="border border-blue-400 px-2 py-2 w-1/6">Disagree</th>
+                <th className="border border-blue-400 px-2 py-2 w-1/6">Strongly Disagree</th>
               </tr>
             </thead>
             <tbody>
@@ -128,10 +138,16 @@ function SurveyForm() {
                 { label: 'I like to watch TV', name: 'tv_rating' }
               ].map((item) => (
                 <tr key={item.name}>
-                  <td className="border border-gray-300 px-2 py-2 text-left">{item.label}</td>
+                  <td className="border border-blue-400 px-2 py-2 text-left w-2/6">{item.label}</td>
                   {[1, 2, 3, 4, 5].map((num) => (
-                    <td key={num} className="border border-gray-300 px-2 py-2">
-                      <input type="radio" name={item.name} value={num} checked={formData[item.name] === num} onChange={handleChange}/>
+                    <td key={num} className="border border-blue-400 px-2 py-2 w-2/6">
+                      <input
+                        type="radio"
+                        name={item.name}
+                        value={num}
+                        checked={formData[item.name] === num}
+                        onChange={handleChange}
+                      />
                     </td>
                   ))}
                 </tr>
@@ -140,7 +156,7 @@ function SurveyForm() {
           </table>
         </div>
 
-        {/* Error / Success Messages */}
+        {/* Messages */}
         {error && <p className="text-red-600">{error}</p>}
         {success && <p className="text-green-600">{success}</p>}
 

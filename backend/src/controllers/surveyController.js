@@ -50,11 +50,11 @@ export const getSurveyResults = (req, res) => {
     const rows = db.prepare('SELECT * FROM surveys').all();
     // Handle the case where no surveys have been submitted yet.
     if (rows.length === 0) {
-      return res.json({ message: 'No Surveys completed yet.' });
+      return res.json({ message: 'No Surveys Available.' });
     }
     const totalSurveys = rows.length;
 
-    // Calculate the age of each respondent based on their date of birth.
+    // Calculate the age of each user based on their date of birth.
     const ages = rows.map(row => {
       const dob = new Date(row.date_of_birth);
       const today = new Date();
@@ -66,7 +66,7 @@ export const getSurveyResults = (req, res) => {
       return age;
     }).filter(age => !isNaN(age)); // Ensure only valid age numbers are processed.
 
-    // Calculate age-related statistics: average, oldest, and youngest.
+    // Calculate age-related stats: average, oldest, and youngest.
     // '.toFixed(1)' formats numbers to one decimal place. 'N/A' is used if no valid ages.
     const avgAge = ages.length > 0 ? (ages.reduce((a, b) => a + b, 0) / ages.length).toFixed(1) : 'N/A';
     const oldest = ages.length > 0 ? Math.max(...ages) : 'N/A';
