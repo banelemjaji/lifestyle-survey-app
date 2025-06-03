@@ -59,6 +59,22 @@ function SurveyForm() {
       }
     }
 
+    const selectedFoods = [];
+    if (formData.fav_food_pizza) selectedFoods.push('Pizza');
+    if (formData.fav_food_pasta) selectedFoods.push('Pasta');
+    if (formData.fav_food_pap_wors) selectedFoods.push('Pap and Wors');
+    if (formData.fav_food_other) selectedFoods.push('Other'); // Or however you handle 'Other'
+
+    const dataToSubmit = {
+      ...formData, // includes personal details, ratings
+      favorite_foods: selectedFoods // override with the array
+    };
+    // Remove individual fav_food_.booleans if they are not needed directly by the backend
+    delete dataToSubmit.fav_food_pizza;
+    delete dataToSubmit.fav_food_pasta;
+    delete dataToSubmit.fav_food_pap_wors;
+    delete dataToSubmit.fav_food_other;
+
     try {
       const res = await api.post('/survey', formData);
       setSuccess(res.data.message);
